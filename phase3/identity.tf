@@ -33,6 +33,13 @@ resource "azurerm_key_vault_secret" "test-secret" {
 
 ## Key Vault RBAC
 
+### Temporary use
+resource "azurerm_role_assignment" "key_vault_sec_officer" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = "079d2621-05a1-4e12-b76d-9cf9883f5101"
+}
+
 resource "azurerm_role_assignment" "key_vault_admin" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets User"
@@ -40,9 +47,3 @@ resource "azurerm_role_assignment" "key_vault_admin" {
   principal_id         = azuread_user.jdoe.object_id
 }
 
-### Temporary use
-resource "azurerm_role_assignment" "key_vault_sec_officer" {
-  scope                = azurerm_key_vault.kv.id
-  role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = "079d2621-05a1-4e12-b76d-9cf9883f5101"
-}
