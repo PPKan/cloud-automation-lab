@@ -37,9 +37,16 @@ resource "azuread_user" "jdoe" {
 
 resource "azurerm_role_assignment" "key_vault_admin" {
   scope                = azurerm_key_vault.kv.id
-  role_definition_name = "Key Vault Secret Reader"
+  role_definition_name = "Key Vault Secrets User"
   principal_type       = "User"
-  principal_id         = azuread_user.jdoe.user_principal_name
+  principal_id         = azuread_user.jdoe.object_id
+}
+
+# Temporary use
+resource "azurerm_role_assignment" "key_vault_sec_officer" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = "079d2621-05a1-4e12-b76d-9cf9883f5101"
 }
 
 ## Workload Identity
@@ -57,6 +64,12 @@ resource "azurerm_key_vault" "kv" {
   purge_protection_enabled    = false
 
   sku_name = "standard"
+}
+
+resource "azurerm_key_vault_secret" "test-secret" {
+  name         = "test"
+  value        = "this-is-a-test-secret"
+  key_vault_id = azurerm_key_vault.kv.id
 }
 
 
