@@ -6,6 +6,16 @@ terraform {
     }
   }
 
+  backend "azurerm" {
+    use_cli          = true
+    use_azuread_auth = true
+
+    tenant_id            = "dc0eca35-2651-44e8-b470-84587580242c"
+    storage_account_name = "stpeterkantesttfstate001"
+    container_name       = "tfstate"
+    key                  = "test.tfstate"
+  }
+
   required_version = ">= 1.0.0"
 }
 
@@ -16,6 +26,9 @@ provider "azurerm" {
       recover_soft_deleted_key_vaults = true
     }
   }
+}
+
+provider "azuread" {
 }
 
 data "azurerm_client_config" "current" {}
