@@ -38,6 +38,8 @@ resource "azurerm_resource_group" "rg" {
   location = "japaneast"
 }
 
-# Identity -> identity.tf
+# keyvault -> keyvault.tf
 
 # Networking -> networking.tf
+
+# Workload -> workload.tf

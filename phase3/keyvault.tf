@@ -1,16 +1,3 @@
-# Identities
-
-## Human Identity
-resource "azuread_user" "jdoe" {
-  user_principal_name = "jdoe@peterkan.tw"
-  display_name        = "J. Doe"
-  mail_nickname       = "jdoe"
-  password            = "SecretP@sswd99!"
-}
-
-
-## Workload Identity
-
 # Key Vault
 
 resource "azurerm_key_vault" "kv" {
@@ -25,19 +12,35 @@ resource "azurerm_key_vault" "kv" {
   sku_name = "standard"
 }
 
-resource "azurerm_key_vault_secret" "test-secret" {
-  name         = "test"
-  value        = "this-is-a-test-secret"
+# Setting up Test Secret
+variable "test_secret" {
+  type      = string
+  sensitive = true
+  ephemeral = true
+}
+
+resource "azurerm_key_vault_secret" "test" {
+  name         = "test-secret"
   key_vault_id = azurerm_key_vault.kv.id
+
+  value_wo         = var.test_secret
+  value_wo_version = 1
 }
 
 ## Key Vault RBAC
 
-### Temporary use
+### Key Vault Admin
 resource "azurerm_role_assignment" "key_vault_sec_officer" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets Officer"
   principal_id         = "079d2621-05a1-4e12-b76d-9cf9883f5101"
+}
+
+### Human Identity -> User creation is created via Entra ID portal
+resource "azuread_user" "jdoe" {
+  user_principal_name = "jdoe@peterkan.tw"
+  display_name        = "J. Doe"
+  mail_nickname       = "jdoe"
 }
 
 resource "azurerm_role_assignment" "key_vault_admin" {
