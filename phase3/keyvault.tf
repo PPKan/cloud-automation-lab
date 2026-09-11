@@ -27,6 +27,15 @@ resource "azurerm_key_vault_secret" "test" {
   value_wo_version = 1
 }
 
+# Managed Identity
+
+resource "azurerm_user_assigned_identity" "acg-uai" {
+  location            = azurerm_resource_group.rg.location
+  name                = "acg-uai"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+
 ## Key Vault RBAC
 
 ### Key Vault Admin
@@ -43,10 +52,19 @@ resource "azuread_user" "jdoe" {
   mail_nickname       = "jdoe"
 }
 
-resource "azurerm_role_assignment" "key_vault_admin" {
+resource "azurerm_role_assignment" "kv_jdoe_secret-user" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets User"
   principal_type       = "User"
   principal_id         = azuread_user.jdoe.object_id
+}
+
+### Workload Identity
+
+resource "azurerm_role_assignment" "kv_acg-uai_secrets-user" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_type       = "ServicePrincipal"
+  principal_id         = azurerm_user_assigned_identity.acg-uai.principal_id
 }
 
